@@ -6,9 +6,17 @@
 </svelte:head>
 <script>
   import createAuth0Client from '@auth0/auth0-spa-js';
-  import { PUBLIC_AUTH0_DOMAIN, PUBLIC_AUTH0_CLIENT_ID } from '$env/static/public';
+  import { 
+    PUBLIC_AUTH0_DOMAIN, 
+    PUBLIC_AUTH0_CLIENT_ID,
+    PUBLIC_STRIPE_PUBLISHABLE_API_KEY,
+    PUBLIC_STRIPE_PRICING_TABLE_ID
+  } from '$env/static/public';
   import { browser } from '$app/env';
 
+  /**
+  * @type {import("@auth0/auth0-spa-js").Auth0Client | undefined}
+  */
   let auth0;
   let isLoggedIn = false;
 
@@ -63,11 +71,10 @@
         <p>After checkout you'll be redirected back to the Stripe Dashboard to complete the process.</p>
       </div>
     </div>
-
     <div class="p-1">      
     <stripe-pricing-table 
-      pricing-table-id="prctbl_1LY8dCGUcADgqoEM3XnZODzH" 
-      publishable-key="pk_test_51KrJdMGUcADgqoEMKiaRg10xK1Ex9ucakQh5ppDOBqXw2gbkVCtNuXw2FQesnmuENuuznSooOgjFqPQG9nGoMMqZ003YtcveTA">
+      pricing-table-id="{PUBLIC_STRIPE_PRICING_TABLE_ID}" 
+      publishable-key="{PUBLIC_STRIPE_PUBLISHABLE_API_KEY}">
     </stripe-pricing-table>
     </div>
   {:else}
@@ -81,6 +88,7 @@
       <button>Sign up</button>          
     </div>
   {/if}
+
   <div class="flex justify-center absolute inset-x-0 bottom-0">
     Made with ❤️ by Stripe
   </div>
