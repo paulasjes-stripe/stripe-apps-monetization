@@ -1,4 +1,4 @@
-import { Box, Button, ContextView, Inline } from "@stripe/ui-extension-sdk/ui";
+import { Box, Button, ContextView, Inline, Link } from "@stripe/ui-extension-sdk/ui";
 import type { ExtensionContextValue } from "@stripe/ui-extension-sdk/context";
 import { useEffect } from "react";
 
@@ -30,7 +30,7 @@ const HomeOverviewView = ({userContext, environment}: ExtensionContextValue) => 
         gap: "medium",
         wrap: "wrap",        
       }}>
-        <Button css={{width: "fill", alignX: "center"}} type="primary" size="large" onPress={(e) => {onLoginPress()}}>Log in</Button>
+        <Button href="https://paulasjes-foo.tunnel.stripe.me" css={{width: "fill", alignX: "center"}} type="primary" size="large" onPress={(e) => {onLoginPress()}}>Log in</Button>
         <Button css={{width: "fill", alignX: "center"}} type="secondary" size="large" onPress={(e) => {onSignUpPress()}}>Sign up</Button>
       </Box>      
     </ContextView>
