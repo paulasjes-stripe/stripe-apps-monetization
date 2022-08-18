@@ -30,9 +30,7 @@ const HomeOverviewView = ({userContext, environment}: ExtensionContextValue) => 
         gap: "medium",
         wrap: "wrap",        
       }}>
-        <Button css={{width: "fill", alignX: "center", color: 'white'}} type="primary" size="large" onPress={(e) => {onLoginPress()}}>
-          <Link href="https://paulasjes-foo.tunnel.stripe.me/">Log in</Link>
-        </Button>
+        <Button href="https://paulasjes-foo.tunnel.stripe.me" css={{width: "fill", alignX: "center"}} type="primary" size="large" onPress={(e) => {onLoginPress()}}>Log in</Button>
         <Button css={{width: "fill", alignX: "center"}} type="secondary" size="large" onPress={(e) => {onSignUpPress()}}>Sign up</Button>
       </Box>      
     </ContextView>
