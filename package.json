@@ -1,7 +1,7 @@
 {
-  "name": "com.example.login",
+  "name": "com.example.stripe-apps-monetization",
   "version": "0.0.1",
-  "description": "Login",
+  "description": "Stripe Apps Monetization",
   "private": true,
   "license": "~~proprietary~~",
   "dependencies": {

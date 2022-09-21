@@ -16,8 +16,6 @@ app.get('/', async (req, res) => {
 });
 
 app.post('/api/buy', async (req, res) => {  
-  console.log('buy');
-
   const accountId:string = req.body['account_id'];
 
   const account:Stripe.Account = await stripe.accounts.retrieve(accountId);
@@ -51,9 +49,9 @@ app.post('/api/buy', async (req, res) => {
         price: priceId,
         quantity: 1,
       },
-    ],
-    success_url: `https://dashboard.stripe.com/test/settings/apps/${process.env.STRIPE_APP_ID}`,
-    cancel_url: `https://dashboard.stripe.com/test/settings/apps/${process.env.STRIPE_APP_ID}`,
+    ],    
+    success_url: `https://dashboard.stripe.com/test/dashboard?open_drawer_app=${process.env.STRIPE_APP_ID}`,
+    cancel_url: `https://dashboard.stripe.com/test/dashboard?open_drawer_app=${process.env.STRIPE_APP_ID}`,
   });
 
   return res.status(200).json({url: session.url})

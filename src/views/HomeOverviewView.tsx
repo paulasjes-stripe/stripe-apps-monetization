@@ -65,7 +65,7 @@ const HomeOverviewView = ({userContext}: ExtensionContextValue) => {
         href: "https://stripe.com/docs/stripe-apps",
       }}
     >
-      <Box css={{
+      <Box css={{        
         padding: "large",        
         stack: "y",
         gap: "medium",
@@ -82,7 +82,7 @@ const HomeOverviewView = ({userContext}: ExtensionContextValue) => {
                 description="A subscription is required to use this app"
                 actions={
                   checkoutURL && (
-                    <Button type="primary" href={checkoutURL}>Sign up</Button>)                  
+                    <Button css={{width: 'fill', alignX: 'center'}} type="primary" href={checkoutURL}>Sign up</Button>)                  
                 }
               />      
             </Box>

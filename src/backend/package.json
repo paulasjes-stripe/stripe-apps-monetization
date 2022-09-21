@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
+  "scripts": {    
     "start": "npx tsc && node -r dotenv/config ./build/app.js",
-    "dev": "nodemon -r dotenv/config ./build/app.js"
+    "dev": "nodemon -r dotenv/config app.ts"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +17,7 @@
     "express": "^4.18.1",
     "nodemon": "^2.0.20",
     "stripe": "^10.10.0",
+    "ts-node": "^10.9.1",
     "typescript": "^4.8.3"
   }
 }

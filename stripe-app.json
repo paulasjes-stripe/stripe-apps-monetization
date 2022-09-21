@@ -1,7 +1,7 @@
 {
-  "id": "com.example.login",
+  "id": "com.example.stripe-apps-monetization",
   "version": "0.0.1",
-  "name": "Login",
+  "name": "Stripe Apps Monetization example",
   "icon": "",
   "permissions": [],
   "app_backend": {
