@@ -19,7 +19,6 @@ const App = ({ userContext, environment }: ExtensionContextValue) => {
         href: "https://stripe.com/docs/stripe-apps"
       }}
     >
-      <Box>Wut</Box>
       <Box css={{ height: "fill", stack: "y", distribute: "space-between" }}>
         <Box
           css={{

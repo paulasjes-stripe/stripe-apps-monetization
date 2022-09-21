@@ -1,22 +1,63 @@
-import { Box, Button, ContextView, Inline, Link } from "@stripe/ui-extension-sdk/ui";
+import { Banner, Box, Button, ContextView, Icon, Inline, Link, Spinner } from "@stripe/ui-extension-sdk/ui";
 import type { ExtensionContextValue } from "@stripe/ui-extension-sdk/context";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-const HomeOverviewView = ({userContext, environment}: ExtensionContextValue) => {
+const HomeOverviewView = ({userContext}: ExtensionContextValue) => {
+  const [hasActiveSubscription, setActiveSubscription] = useState<boolean>(false);
+  const [checkoutURL, setCheckoutURL] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const BACKEND_URL = 'http://localhost:3000';
+
+  const fetchCheckout = async () => {    
+    try {      
+      const response = await fetch(`${BACKEND_URL}/api/buy`, {
+        method: "POST",
+        headers: {          
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          account_id: userContext?.account.id,
+        }),
+      }); 
+      
+      const body = await response.json();
+
+      const checkoutUrl = body.url;
+
+      setCheckoutURL(checkoutUrl);
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchStatus = async () => {    
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/subscription`, {
+        method: "POST",
+        headers: {
+          // "Stripe-Signature": await fetchStripeSignature(),
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify( {
+          account_id: userContext?.account.id,
+        }),
+      }); 
+      const body = await response.json();
+
+      setActiveSubscription(body.isActive);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
-    // TODO check secret store for OAuth token
-    // if not available, do OAuth dance
-  });
+    fetchStatus();
+    fetchCheckout();
+  }, []);
 
-  const onLoginPress = () => {
-    console.log('log in');
-  };
-
-  const onSignUpPress = () => {
-    console.log('sign up');
-  };
-
-  return (
+  return (    
     <ContextView
       title="Welcome"
       externalLink={{
@@ -29,11 +70,42 @@ const HomeOverviewView = ({userContext, environment}: ExtensionContextValue) => 
         stack: "y",
         gap: "medium",
         wrap: "wrap",        
-      }}>
-        <Button href="https://paulasjes-foo.tunnel.stripe.me" css={{width: "fill", alignX: "center"}} type="primary" size="large" onPress={(e) => {onLoginPress()}}>Log in</Button>
-        <Button css={{width: "fill", alignX: "center"}} type="secondary" size="large" onPress={(e) => {onSignUpPress()}}>Sign up</Button>
+      }}>        
+        {loading ? (
+          <Spinner />          
+        ) : (
+          !hasActiveSubscription && (
+            <Box css={{marginTop: 'large', marginBottom: 'large'}}>
+              <Banner
+                type="caution"
+                title="Subscription required"
+                description="A subscription is required to use this app"
+                actions={
+                  checkoutURL && (
+                    <Button type="primary" href={checkoutURL}>Sign up</Button>)                  
+                }
+              />      
+            </Box>
+          )
+        )}
+        
+        {hasActiveSubscription && (
+          <Box css={{
+            marginTop: 'xlarge',
+            padding: 'medium',
+            background: 'container',
+            borderRadius: 'medium',
+          }}>
+            <Box css={{stack: 'x', distribute: 'space-between', alignY: 'center', width: 'fill'}}>
+              <Link  href="customers"><Inline>Customers</Inline></Link>
+              <Box css={{ color: "info"}}>
+                <Icon name="next" />
+              </Box>
+            </Box>
+          </Box>
+        )}
       </Box>      
-    </ContextView>
+    </ContextView>    
   );
 };
 
