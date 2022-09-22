@@ -82,4 +82,29 @@ app.post('/api/subscription', async (req, res) => {
   res.status(200).json({isActive: hasActive})
 });
 
+app.post('/api/subscription/manage', async (req, res) => {  
+  const accountId:string = req.body['account_id'];
+
+  // Retrieve the customer
+  const customerList:Stripe.ApiSearchResult<Stripe.Customer> = await stripe.customers.search({
+    query: `metadata['account_id']:\'${accountId}\'`,
+  });
+
+  if (customerList.data.length === 0) {
+    return res.status(404).json({
+      error: 'Customer not found',
+    });
+  }
+
+  const customer:Stripe.Customer = customerList.data[0];
+  console.log('customer', customer);
+
+  const session:Stripe.BillingPortal.Session = await stripe.billingPortal.sessions.create({
+    customer: customer.id,
+    return_url: `https://dashboard.stripe.com/test/settings/apps/${process.env.STRIPE_APP_ID}`,
+  });
+
+  res.status(200).json({url: session.url})
+});
+
 app.listen(3000, () => console.log('Backend running on port 3000'));

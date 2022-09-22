@@ -12,9 +12,9 @@ const HomeOverviewView = ({userContext}: ExtensionContextValue) => {
   const fetchCheckout = async () => {    
     try {      
       const response = await fetch(`${BACKEND_URL}/api/buy`, {
-        method: "POST",
+        method: 'POST',
         headers: {          
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           account_id: userContext?.account.id,
@@ -35,10 +35,9 @@ const HomeOverviewView = ({userContext}: ExtensionContextValue) => {
   const fetchStatus = async () => {    
     try {
       const response = await fetch(`${BACKEND_URL}/api/subscription`, {
-        method: "POST",
-        headers: {
-          // "Stripe-Signature": await fetchStripeSignature(),
-          "Content-Type": "application/json",
+        method: 'POST',
+        headers: {          
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify( {
           account_id: userContext?.account.id,
@@ -54,12 +53,18 @@ const HomeOverviewView = ({userContext}: ExtensionContextValue) => {
 
   useEffect(() => {
     fetchStatus();
-    fetchCheckout();
+
+    // Only fetch the Checkout Session URL if we don't have an active subscription
+    if (!hasActiveSubscription) {
+      fetchCheckout();
+    } else {
+      setLoading(false);
+    }
   }, []);
 
   return (    
     <ContextView
-      title="Welcome"
+      title="Monetization example"
       externalLink={{
         label: "View docs",
         href: "https://stripe.com/docs/stripe-apps",
@@ -96,11 +101,10 @@ const HomeOverviewView = ({userContext}: ExtensionContextValue) => {
             background: 'container',
             borderRadius: 'medium',
           }}>
-            <Box css={{stack: 'x', distribute: 'space-between', alignY: 'center', width: 'fill'}}>
-              <Link  href="customers"><Inline>Customers</Inline></Link>
-              <Box css={{ color: "info"}}>
-                <Icon name="next" />
-              </Box>
+            <Box css={{stack: 'y', gap: 'medium', distribute: 'space-between', alignY: 'center', width: 'fill'}}>
+              <Box css={{ fontWeight: 'semibold' }}>Thanks for signing up!</Box>
+              <Box>This user now has access to the rest of the Stripe App</Box>              
+              <Link href="https://dashboard.stripe.com/test/apps/settings-preview">Manage your subscription in the settings page</Link>
             </Box>
           </Box>
         )}
