@@ -3,6 +3,11 @@ This sample app shows how monetize your Stripe App by checking if the user paid,
 
 It uses Stripe Checkout and the Customer Portal to create and manage the subscription, while using [metadata](https://stripe.com/docs/api/metadata) to track the user's status.
 
+View without subscription             |  View with subscription
+:-------------------------:|:-------------------------:
+<img width="317" alt="Screenshot 2022-09-23 at 13 01 14" src="https://user-images.githubusercontent.com/46610432/191947047-da6bc9eb-7a6e-4600-9d41-6ef1a5afdf64.png">  |  <img width="322" alt="Screenshot 2022-09-23 at 13 01 39" src="https://user-images.githubusercontent.com/46610432/191947064-73715f05-9972-4dfd-8ccd-f3034f791f6c.png">
+
+
 ## Set up
 In the root folder, install dependencies by running
 ```
