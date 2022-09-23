@@ -16,19 +16,21 @@ yarn
 
 Next, obtain the app signing secret by uploading your app. This will just install the app on your Stripe account, it can be uninstalled at any time.
 
-**Note** To upload an app its ID needs to be unique (similar to npm packages). Either rename the ID in `stripe-app.json` to something unique or use the supplied script to randomly generate a new ID for both `stripe-app.json` and `package.json`:
+**Note: To upload an app successfully its ID needs to be unique (similar to npm packages).** Either rename the ID in `stripe-app.json` to something unique or use the supplied script to randomly generate a new ID for both `stripe-app.json` and `package.json`:
 
 ```
 npm run unique-id
 ```
 
+Once you have a unique ID, upload the app with:
+
 ```
 stripe apps upload
 ```
 
-Note the app signing secret in the context menu on the right
+Note the app signing secret in the context menu on the right:
 
-
+![Screenshot 2022-09-23 at 15 29 33](https://user-images.githubusercontent.com/46610432/191988965-e420a134-9250-40c1-bb14-5dad1f9d98c0.png)
 
 Then, in the `backend` directory, install dependencies there
 
@@ -51,7 +53,7 @@ PRICE_ID=price_123
 // Your app ID. You can find this in `stripe-app.json` under `id`.
 STRIPE_APP_ID=com.example.your-app-name
 
-// The app signing secret, which you can get after uploading the app using `stripe apps upload`
+// The app signing secret, which you can get from the dashboard after uploading the app using `stripe apps upload`
 STRIPE_APP_SECRET=absec_123
 ```
 
