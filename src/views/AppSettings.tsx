@@ -2,14 +2,12 @@ import {
   Box,
   Button,
   ButtonGroup,
-  Icon,
-  Inline,
-  Link,
   SettingsView,
   Spinner,
 } from "@stripe/ui-extension-sdk/ui";
 import type { ExtensionContextValue } from "@stripe/ui-extension-sdk/context";
 import { useEffect, useState } from "react";
+import fetchStripeSignature from "@stripe/ui-extension-sdk/signature";
 
 const AppSettings = ({userContext, environment}: ExtensionContextValue) => {
   const [hasActiveSubscription, setActiveSubscription] = useState<boolean>(false);
@@ -18,16 +16,20 @@ const AppSettings = ({userContext, environment}: ExtensionContextValue) => {
 
   const BACKEND_URL = 'http://localhost:3000';
 
+  const payload = JSON.stringify({
+    user_id: userContext?.id,
+    account_id: userContext?.account.id,
+  });
+
   const fetchStatus = async () => {    
     try {
       const response = await fetch(`${BACKEND_URL}/api/subscription`, {
         method: 'POST',
         headers: {          
           'Content-Type': 'application/json',
+          'Stripe-Signature': await fetchStripeSignature(),
         },
-        body: JSON.stringify( {
-          account_id: userContext?.account.id,
-        }),
+        body: payload,
       }); 
       const body = await response.json();
 
@@ -43,10 +45,9 @@ const AppSettings = ({userContext, environment}: ExtensionContextValue) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json', 
+          'Stripe-Signature': await fetchStripeSignature(),
         },
-        body: JSON.stringify({
-          account_id: userContext?.account.id,
-        }),
+        body: payload,
       });
 
       const body = await response.json();
@@ -77,7 +78,7 @@ const AppSettings = ({userContext, environment}: ExtensionContextValue) => {
         }}>
         <Box css={{ stack: 'y', gap: 'small', paddingBottom: 'large' }}>
           <Box css={{ fontWeight: 'semibold' }}>Manage subscription</Box>
-          <Box>Use the buttons below to manage or cancel your subscription</Box>
+          <Box>Use the button below to manage or cancel your subscription</Box>
         </Box>        
         {loading ? (
           <Spinner />

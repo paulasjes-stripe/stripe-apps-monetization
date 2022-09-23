@@ -1,5 +1,6 @@
 import { Banner, Box, Button, ContextView, Icon, Inline, Link, Spinner } from "@stripe/ui-extension-sdk/ui";
 import type { ExtensionContextValue } from "@stripe/ui-extension-sdk/context";
+import fetchStripeSignature from '@stripe/ui-extension-sdk/signature';
 import { useEffect, useState } from "react";
 
 const HomeOverviewView = ({userContext}: ExtensionContextValue) => {
@@ -9,16 +10,20 @@ const HomeOverviewView = ({userContext}: ExtensionContextValue) => {
 
   const BACKEND_URL = 'http://localhost:3000';
 
+  const payload = JSON.stringify({
+    user_id: userContext?.id,
+    account_id: userContext?.account.id,
+  });  
+
   const fetchCheckout = async () => {    
     try {      
       const response = await fetch(`${BACKEND_URL}/api/buy`, {
         method: 'POST',
         headers: {          
           'Content-Type': 'application/json',
+          'Stripe-Signature': await fetchStripeSignature(),
         },
-        body: JSON.stringify({
-          account_id: userContext?.account.id,
-        }),
+        body: payload,
       }); 
       
       const body = await response.json();
@@ -38,11 +43,11 @@ const HomeOverviewView = ({userContext}: ExtensionContextValue) => {
         method: 'POST',
         headers: {          
           'Content-Type': 'application/json',
+          'Stripe-Signature': await fetchStripeSignature(),
         },
-        body: JSON.stringify( {
-          account_id: userContext?.account.id,
-        }),
+        body: payload,
       }); 
+      
       const body = await response.json();
 
       setActiveSubscription(body.isActive);
@@ -94,7 +99,7 @@ const HomeOverviewView = ({userContext}: ExtensionContextValue) => {
           )
         )}
         
-        {hasActiveSubscription && (
+        {hasActiveSubscription && !loading && (
           <Box css={{
             marginTop: 'xlarge',
             padding: 'medium',

@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import Stripe from 'stripe';
 
@@ -15,14 +15,39 @@ app.get('/', async (req, res) => {
   res.status(200).send('Hello');
 });
 
-app.post('/api/buy', async (req, res) => {  
+async function getCustomer(accountId: string): Promise<Stripe.ApiSearchResult<Stripe.Customer>> {
+  return await stripe.customers.search({
+    query: `metadata['account_id']:'${accountId}'`,
+  });
+}
+// Middleware to verify the signature
+function verifySignature(req: Request, res: Response, next: NextFunction) {
   const accountId:string = req.body['account_id'];
+  const sig:string = req.headers['stripe-signature'] as string;
+
+  // Retrieve user id and account id from the request body
+  const payload = JSON.stringify({
+    user_id: req.body['user_id'],
+    account_id: accountId,
+  });  
+
+  try {
+    // Verify the payload and signature from the request with the app secret.
+    stripe.webhooks.signature.verifyHeader(payload, sig, process.env.STRIPE_APP_SECRET as string);
+  } catch (error: any) {
+    console.log(error.message );
+    return res.status(400).send('Something went wrong');
+  }
+
+  next();
+}
+
+app.post('/api/buy', verifySignature, async (req, res) => {  
+  const accountId:string = req.body['account_id'];  
 
   const account:Stripe.Account = await stripe.accounts.retrieve(accountId);
 
-  const customerList:Stripe.ApiSearchResult<Stripe.Customer> = await stripe.customers.search({
-    query: `metadata['account_id']:'${accountId}'`,
-  });
+  const customerList:Stripe.ApiSearchResult<Stripe.Customer> = await getCustomer(accountId);
 
   let customer:Stripe.Customer;
 
@@ -57,12 +82,9 @@ app.post('/api/buy', async (req, res) => {
   return res.status(200).json({url: session.url})
 });
 
-app.post('/api/subscription', async (req, res) => {    
+app.post('/api/subscription', verifySignature, async (req, res) => {    
   const accountId:string = req.body['account_id'];
-
-  const customerList:Stripe.ApiSearchResult<Stripe.Customer> = await stripe.customers.search({
-    query: `metadata['account_id']:'${accountId}'`,
-  });
+  const customerList:Stripe.ApiSearchResult<Stripe.Customer> = await getCustomer(accountId);
 
   // If this is a new customer, return early
   if (customerList.data.length === 0) {
@@ -79,16 +101,14 @@ app.post('/api/subscription', async (req, res) => {
 
   const hasActive:boolean = subscriptions.data.length > 0;
 
-  res.status(200).json({isActive: hasActive})
+  return res.status(200).json({isActive: hasActive})
 });
 
-app.post('/api/subscription/manage', async (req, res) => {  
+app.post('/api/subscription/manage', verifySignature, async (req, res) => {  
   const accountId:string = req.body['account_id'];
 
   // Retrieve the customer
-  const customerList:Stripe.ApiSearchResult<Stripe.Customer> = await stripe.customers.search({
-    query: `metadata['account_id']:\'${accountId}\'`,
-  });
+  const customerList:Stripe.ApiSearchResult<Stripe.Customer> = await getCustomer(accountId);
 
   if (customerList.data.length === 0) {
     return res.status(404).json({
